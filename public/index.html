@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTTP Video Streaming</title>
+    <style>
+      body {
+        margin: 40px auto;
+        max-width: 650px;
+        background-color: #444;
+        color: white;
+        font-family: Arial, sans-serif;
+      }
+      select,
+      input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+      #videoPlayer {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Upload Video</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="video" accept="video/mp4" />
+      <button type="submit">Upload</button>
+    </form>
+    <h2>Select Video</h2>
+    <select id="videoSelect">
+      <!-- Options will be populated dynamically via JavaScript -->
+    </select>
+
+    <h2>Video Player</h2>
+    <video id="videoPlayer" controls autoplay>
+      <!-- Video source will be set dynamically -->
+    </video>
+
+    <script>
+      const videoSelect = document.getElementById("videoSelect");
+      const videoPlayer = document.getElementById("videoPlayer");
+      const uploadForm = document.getElementById("uploadForm");
+
+      // Function to fetch video URLs and populate the select element
+      function fetchVideoList() {
+        fetch("/videos") // Assuming '/videos' endpoint returns a JSON array of video URLs
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to fetch video list.");
+            }
+            return response.json();
+          })
+          .then((videoUrls) => {
+            videoUrls.forEach((url) => {
+              const option = document.createElement("option");
+              option.textContent = url;
+              option.value = url;
+              videoSelect.appendChild(option);
+            });
+
+            // Play the first video in the list when the page loads
+            playVideo();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle error
+          });
+      }
+
+      // Function to play selected video
+      function playVideo() {
+        const selectedUrl = videoSelect.value;
+        if (selectedUrl) {
+          // Set the video source with src attribute
+          videoPlayer.src = selectedUrl;
+          videoPlayer.load(); // Load the new video source
+          videoPlayer.play(); // Play the video
+        }
+      }
+
+      // Event listener for select change
+      videoSelect.addEventListener("change", playVideo);
+
+      // Event listener for form submission (upload video)
+      uploadForm.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const formData = new FormData(uploadForm); // Construct FormData from the form element
+
+        fetch("/upload", {
+          method: "POST",
+          body: formData,
+          // No need to set 'Content-Type' header, it will be automatically set for FormData
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to upload video.");
+            }
+            return response.text();
+          })
+          .then((message) => {
+            alert(message); // Show success message
+            fetchVideoList(); // Refresh video list after upload
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to upload video."); // Show error message
+          });
+      });
+
+      // Fetch video list when the page loads
+      fetchVideoList();
+    </script>
+  </body>
+</html>
