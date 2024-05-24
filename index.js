@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const PORT = 3000;
 
 const app = express();
 app.use(express.static("public"));
@@ -65,6 +66,6 @@ app.get("/video/:filename", function (req, res) {
   videoStream.pipe(res);
 });
 
-app.listen(3000, function () {
-  console.log("Listening on port 8000!");
+app.listen(PORT, function () {
+  console.log(`Listening on port ${PORT}!`);
 });
