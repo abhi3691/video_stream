@@ -4,7 +4,11 @@ This project implements a simple HTTP video streaming application using Node.js,
 
 
 
-https://github.com/abhi3691/video_stream/assets/54738565/abce87d9-4d07-4488-9d87-72a5c4c8b940
+
+https://github.com/abhi3691/video_stream/assets/54738565/48a771b7-6b66-459a-950d-123784d91f8b
+
+
+
 
 
 ## Features
