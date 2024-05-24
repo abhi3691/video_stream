@@ -6,10 +6,16 @@ const multer = require("multer");
 const app = express();
 app.use(express.static("public"));
 
+// Ensure the 'uploads' directory exists
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
 // Set up Multer for handling file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "uploads")); // Save uploaded files to the 'uploads' directory
+    cb(null, uploadDir); // Save uploaded files to the 'uploads' directory
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname); // Keep the original filename
@@ -24,8 +30,7 @@ app.post("/upload", upload.single("video"), function (req, res) {
 
 // Endpoint to fetch list of video URLs
 app.get("/videos", function (req, res) {
-  const videoDirectory = path.join(__dirname, "uploads");
-  fs.readdir(videoDirectory, function (err, files) {
+  fs.readdir(uploadDir, function (err, files) {
     if (err) {
       console.error("Error reading directory:", err);
       res.status(500).json({ error: "Internal Server Error" });
@@ -38,7 +43,7 @@ app.get("/videos", function (req, res) {
 
 // Route for streaming the uploaded video
 app.get("/video/:filename", function (req, res) {
-  const videoPath = path.join(__dirname, "uploads", req.params.filename);
+  const videoPath = path.join(uploadDir, req.params.filename);
   const videoSize = fs.statSync(videoPath).size;
   const CHUNK_SIZE = 10 ** 6;
   const range = req.headers.range;
@@ -60,6 +65,6 @@ app.get("/video/:filename", function (req, res) {
   videoStream.pipe(res);
 });
 
-app.listen(8000, function () {
+app.listen(3000, function () {
   console.log("Listening on port 8000!");
 });
