@@ -28,7 +28,7 @@ Follow these instructions to get the project up and running on your local machin
 2. Navigate to the project directory:
 3. Install the dependencies:
 4. Start the server:
-5. Open your web browser and go to `http://localhost:8000` to access the application.
+5. Open your web browser and go to `http://localhost:3000` to access the application.
 
 ## Usage
 
